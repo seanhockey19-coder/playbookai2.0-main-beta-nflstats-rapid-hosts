@@ -1,8 +1,7 @@
-// FILE: app/ladder-challenge/page.tsx
 "use client";
 import * as React from "react";
-import { getJSON } from "@/lib/useApi";
 import type { Game, Prop } from "@/lib/types";
+import { getGamesEnvelope, getPropsEnvelope } from "@/lib/useApi";
 import { parlayAmerican, bankrollProgression } from "@/lib/oddsMath";
 import TeamLogo from "@/components/TeamLogo";
 
@@ -29,56 +28,47 @@ export default function LadderChallengePage() {
     (async () => {
       try {
         const path = sport === "americanfootball_nfl" ? "/api/nfl/games" : "/api/nba/games";
-        const data = await getJSON<{ provider: string; games: Game[]; errors: string[] }>(path);
-        if (mounted) setGames(data.games);
+        const { games } = await getGamesEnvelope<Game>(path);
+        if (mounted) setGames(games);
       } catch (e: any) {
         if (mounted) setError(e?.message ?? "failed to load games");
       } finally {
         if (mounted) setLoading(false);
       }
     })();
-    return () => {
-      mounted = false;
-    };
+    return () => { mounted = false; };
   }, [sport]);
 
   // Load props for selected game
   React.useEffect(() => {
-    if (!selectedGame) {
-      setProps([]);
-      return;
-    }
+    if (!selectedGame) { setProps([]); return; }
     let mounted = true;
     setLoading(true);
     setError(null);
     (async () => {
       try {
         const route = sport === "americanfootball_nfl" ? "/api/nfl/props" : "/api/nba/props";
-        const data = await getJSON<{ provider: string; props: Prop[]; errors: string[] }>(route, {
-          gameId: selectedGame,
-        });
-        if (mounted) setProps(data.props);
+        const { props } = await getPropsEnvelope<Prop>(route, { gameId: selectedGame });
+        if (mounted) setProps(props);
       } catch (e: any) {
         if (mounted) setError(e?.message ?? "failed to load props");
       } finally {
         if (mounted) setLoading(false);
       }
     })();
-    return () => {
-      mounted = false;
-    };
+    return () => { mounted = false; };
   }, [selectedGame, sport]);
 
-  // Auto-generate safe legs (-500 to -1000 American)
-  const safeLegs = React.useMemo(() => {
-    return props.filter((p) => p.odds <= -500 && p.odds >= -1000).slice(0, 40);
-  }, [props]);
+  // Auto safe legs (-500 to -1000)
+  const safeLegs = React.useMemo(
+    () => props.filter(p => p.odds <= -500 && p.odds >= -1000).slice(0, 40),
+    [props]
+  );
 
-  // Simple combos around target (pairs then triples)
+  // Combos near target (-100 default): pairs, then triples
   const combosNearTarget = React.useMemo(() => {
     const legs = safeLegs;
     const res: { ids: string[]; american: number }[] = [];
-
     for (let i = 0; i < legs.length; i++) {
       for (let j = i + 1; j < legs.length; j++) {
         const a = parlayAmerican([legs[i].odds, legs[j].odds]);
@@ -168,9 +158,7 @@ export default function LadderChallengePage() {
               <ul className="text-sm space-y-1 max-h-64 overflow-auto pr-2">
                 {safeLegs.map((l) => (
                   <li key={l.id} className="flex justify-between gap-2">
-                    <span>
-                      {l.player} — {l.market} {l.line ?? ""}
-                    </span>
+                    <span>{l.player} — {l.market} {l.line ?? ""}</span>
                     <span className="opacity-80">{l.odds}</span>
                   </li>
                 ))}
@@ -221,7 +209,6 @@ export default function LadderChallengePage() {
         </div>
       </div>
 
-      {/* Optional: Selected game header with logos */}
       {selectedGame && (
         <div className="rounded-xl border border-zinc-800 p-3 bg-zinc-900">
           <div className="font-medium mb-2">Selected Game</div>
