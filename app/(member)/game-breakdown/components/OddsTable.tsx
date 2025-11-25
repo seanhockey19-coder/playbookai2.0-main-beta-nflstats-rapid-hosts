@@ -94,4 +94,69 @@ export default function OddsTable({ game }: { game: Game }) {
           <div className="space-y-2 text-sm">
             <div className="flex items-center justify-between">
               <span className="opacity-80">
-                {spreadRow.away.team} {spreadRow.away.line !== null ? spreadRow.away.line : ""} ({fmtAmerican(spre
+                {spreadRow.away.team} {spreadRow.away.line !== null ? spreadRow.away.line : ""} ({fmtAmerican(spreadRow.away.odds)})
+              </span>
+              <span className="font-mono">{fmtPct(spreadRow.away.ip)}</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="opacity-80">
+                {spreadRow.home.team} {spreadRow.home.line !== null ? spreadRow.home.line : ""} ({fmtAmerican(spreadRow.home.odds)})
+              </span>
+              <span className="font-mono">{fmtPct(spreadRow.home.ip)}</span>
+            </div>
+          </div>
+        ) : (
+          <div className="text-sm opacity-60">—</div>
+        )}
+      </div>
+
+      {/* Total */}
+      <div className="rounded-xl border border-zinc-800 p-3 bg-zinc-900">
+        <div className="text-xs uppercase tracking-wide opacity-70 mb-2">Total</div>
+        {totalRow ? (
+          <div className="space-y-2 text-sm">
+            <div className="flex items-center justify-between">
+              <span className="opacity-80">
+                Over {totalRow.over.line ?? ""} ({fmtAmerican(totalRow.over.odds)})
+              </span>
+              <span className="font-mono">{fmtPct(totalRow.over.ip)}</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="opacity-80">
+                Under {totalRow.under.line ?? ""} ({fmtAmerican(totalRow.under.odds)})
+              </span>
+              <span className="font-mono">{fmtPct(totalRow.under.ip)}</span>
+            </div>
+          </div>
+        ) : (
+          <div className="text-sm opacity-60">—</div>
+        )}
+      </div>
+
+      {/* Moneyline */}
+      <div className="rounded-xl border border-zinc-800 p-3 bg-zinc-900">
+        <div className="text-xs uppercase tracking-wide opacity-70 mb-2">Moneyline</div>
+        {moneyline ? (
+          <div className="space-y-2 text-sm">
+            <div className="flex items-center justify-between">
+              <span className="opacity-80">
+                {moneyline.away.team} ({fmtAmerican(moneyline.away.odds)})
+              </span>
+              <span className="font-mono">{fmtPct(moneyline.away.ip)}</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="opacity-80">
+                {moneyline.home.team} ({fmtAmerican(moneyline.home.odds)})
+              </span>
+              <span className="font-mono">{fmtPct(moneyline.home.ip)}</span>
+            </div>
+          </div>
+        ) : (
+          <div className="text-sm opacity-60">—</div>
+        )}
+      </div>
+
+      {nothing}
+    </div>
+  );
+}
