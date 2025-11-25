@@ -1,0 +1,43 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Global site styles */
+body {
+  @apply bg-slate-950 text-slate-100 antialiased;
+}
+
+html, body {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+/* Default layout container */
+.main-container {
+  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+}
+
+/* Headings */
+h1, h2, h3, h4 {
+  @apply font-bold text-slate-100;
+}
+
+h1 {
+  @apply text-3xl sm:text-4xl mb-4;
+}
+
+h2 {
+  @apply text-2xl sm:text-3xl mt-6 mb-3;
+}
+
+/* Card styles */
+.card {
+  @apply bg-slate-900/60 border border-slate-800 rounded-xl p-4 shadow-lg;
+}
+
+/* Muted text */
+.text-muted {
+  @apply text-slate-400;
+}
