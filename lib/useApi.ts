@@ -1,6 +1,5 @@
 // FILE: lib/useApi.ts
 // Purpose: Typed client helpers for API envelopes to avoid passing the wrong shape into React state.
-// Why: Your API returns { provider, games/props, errors }. These helpers unwrap with types.
 
 export type GamesEnvelope<TGame> = {
   provider: string;
@@ -48,12 +47,9 @@ export async function getGamesEnvelope<TGame>(
  */
 export async function getPropsEnvelope<TProp>(
   path: "/api/nfl/props" | "/api/nba/props",
-  params:
-    | { gameId: string; raGameId?: never }
-    | { raGameId: string; gameId?: never }
+  params: { gameId: string } | { raGameId: string }
 ): Promise<PropsEnvelope<TProp>> {
-  // Narrow to a plain record for getJSON signature.
   const qp: Record<string, string> =
-    "gameId" in params ? { gameId: params.gameId } : { raGameId: (params as any).raGameId };
+    "gameId" in params ? { gameId: params.gameId } : { raGameId: params.raGameId };
   return getJSON<PropsEnvelope<TProp>>(path, qp);
 }
