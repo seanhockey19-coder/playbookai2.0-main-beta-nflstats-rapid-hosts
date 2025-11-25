@@ -1,10 +1,11 @@
-// FILE: app/(member)/game-breakdown/page.tsx
+// FILE: app/(member)/game-breakdown/page.tsx  (replace the previous file's bottom "Line Value Scan" section)
 "use client";
 import * as React from "react";
 import type { Game, Prop } from "@/lib/types";
 import { getPropsEnvelope } from "@/lib/useApi";
 import { useGames } from "@/lib/hooks/useGames";
 import TeamLogo from "@/components/TeamLogo";
+import OddsTable from "./components/OddsTable";
 
 type Sport = "americanfootball_nfl" | "basketball_nba";
 
@@ -40,10 +41,7 @@ export default function GameBreakdownPage() {
     return () => { mounted = false; };
   }, [selectedGame, sport]);
 
-  const game = React.useMemo(
-    () => games.find((g) => g.id === selectedGame),
-    [games, selectedGame]
-  );
+  const game = React.useMemo(() => games.find((g) => g.id === selectedGame), [games, selectedGame]);
   const sportKey = sport === "basketball_nba" ? "nba" : "nfl";
 
   return (
@@ -108,7 +106,7 @@ export default function GameBreakdownPage() {
         </div>
       )}
 
-      {/* Narrative + quick edges */}
+      {/* Narrative + quick props */}
       <div className="grid gap-4 md:grid-cols-3">
         <div className="md:col-span-2 rounded-xl border border-zinc-800 p-4 bg-zinc-900">
           <div className="font-medium mb-2">AI Game Notes</div>
@@ -116,7 +114,6 @@ export default function GameBreakdownPage() {
             <p className="text-sm opacity-90">
               Model preview: pace, usage, and matchup trends suggest a{" "}
               <span className="font-medium">balanced</span> script with exploitable player-prop value.
-              This panel updates as new lines/props arrive.
             </p>
           ) : (
             <div className="text-sm opacity-70">Select a game to see notes.</div>
@@ -133,7 +130,9 @@ export default function GameBreakdownPage() {
             <ul className="space-y-2">
               {props.slice(0, 6).map((p) => (
                 <li key={p.id} className="flex items-center justify-between">
-                  <span className="text-sm">{p.player} — {p.market} {p.line ?? ""}</span>
+                  <span className="text-sm">
+                    {p.player} — {p.market} {p.line ?? ""}
+                  </span>
                   <span className="text-xs opacity-80">{p.odds}</span>
                 </li>
               ))}
@@ -144,12 +143,10 @@ export default function GameBreakdownPage() {
         </div>
       </div>
 
-      {/* Value scan (placeholder until odds table wired) */}
+      {/* Line Value Scan — now real data */}
       <div className="rounded-xl border border-zinc-800 p-4 bg-zinc-900">
-        <div className="font-medium mb-2">Line Value Scan</div>
-        <div className="text-sm opacity-80">
-          Once bookmaker lines are surfaced here, we’ll compute edges vs. implied probability and show best-value legs.
-        </div>
+        <div className="font-medium mb-3">Line Value Scan</div>
+        {game ? <OddsTable game={game} /> : <div className="text-sm opacity-70">Select a game.</div>}
       </div>
     </div>
   );
